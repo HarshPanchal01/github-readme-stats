@@ -20,6 +20,15 @@ const languageColors = require("../common/languageColors.json");
 
 const DEFAULT_LANG_COLOR = "#858585";
 
+// Create a lowercase key mapping for efficient case-insensitive lookups
+const lowercaseLanguageColors = Object.keys(languageColors).reduce(
+  (acc, key) => {
+    acc[key.toLowerCase()] = languageColors[key];
+    return acc;
+  },
+  {},
+);
+
 /**
  * Top languages fetcher object.
  *
@@ -72,11 +81,8 @@ const getCustomColor = (langName) => {
     return languageColors[langName];
   }
 
-  // Case-insensitive fallback
-  const langKey = Object.keys(languageColors).find(
-    (key) => key.toLowerCase() === langName.toLowerCase(),
-  );
-  return langKey ? languageColors[langKey] : null;
+  // Case-insensitive fallback using pre-computed lowercase mapping
+  return lowercaseLanguageColors[langName.toLowerCase()] || null;
 };
 
 /**
