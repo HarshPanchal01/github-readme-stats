@@ -67,13 +67,13 @@ describe("FetchTopLanguages", () => {
     let repo = await fetchTopLanguages("anuraghazra", [], 0.5, 0.5);
     expect(repo).toStrictEqual({
       HTML: {
-        color: "#0f0",
+        color: "#e34c26",
         count: 2,
         name: "HTML",
         size: 20.000000000000004,
       },
       javascript: {
-        color: "#0ff",
+        color: "#f1e05a",
         count: 2,
         name: "javascript",
         size: 20.000000000000004,
@@ -87,13 +87,13 @@ describe("FetchTopLanguages", () => {
     let repo = await fetchTopLanguages("anuraghazra", ["test-repo-1"]);
     expect(repo).toStrictEqual({
       HTML: {
-        color: "#0f0",
+        color: "#e34c26",
         count: 1,
         name: "HTML",
         size: 100,
       },
       javascript: {
-        color: "#0ff",
+        color: "#f1e05a",
         count: 2,
         name: "javascript",
         size: 200,
@@ -107,13 +107,13 @@ describe("FetchTopLanguages", () => {
     let repo = await fetchTopLanguages("anuraghazra", [], 1, 0);
     expect(repo).toStrictEqual({
       HTML: {
-        color: "#0f0",
+        color: "#e34c26",
         count: 2,
         name: "HTML",
         size: 200,
       },
       javascript: {
-        color: "#0ff",
+        color: "#f1e05a",
         count: 2,
         name: "javascript",
         size: 200,
@@ -127,13 +127,13 @@ describe("FetchTopLanguages", () => {
     let repo = await fetchTopLanguages("anuraghazra", [], 0, 1);
     expect(repo).toStrictEqual({
       HTML: {
-        color: "#0f0",
+        color: "#e34c26",
         count: 2,
         name: "HTML",
         size: 2,
       },
       javascript: {
-        color: "#0ff",
+        color: "#f1e05a",
         count: 2,
         name: "javascript",
         size: 2,
@@ -167,5 +167,120 @@ describe("FetchTopLanguages", () => {
     await expect(fetchTopLanguages("anuraghazra")).rejects.toThrow(
       "Something went wrong while trying to retrieve the language data using the GraphQL API.",
     );
+  });
+
+  it("should use custom colors from languageColors.json instead of API colors", async () => {
+    mock.onPost("https://api.github.com/graphql").reply(200, data_langs);
+
+    let repo = await fetchTopLanguages("anuraghazra");
+    // HTML should use custom color #e34c26 from languageColors.json, not #0f0 from API
+    expect(repo.HTML.color).toBe("#e34c26");
+    // javascript should use custom color #f1e05a from languageColors.json (case-insensitive), not #0ff from API
+    expect(repo.javascript.color).toBe("#f1e05a");
+  });
+
+  it("should handle case-insensitive language name matching for custom colors", async () => {
+    const data_case_test = {
+      data: {
+        user: {
+          repositories: {
+            nodes: [
+              {
+                name: "test-repo-1",
+                languages: {
+                  edges: [
+                    { size: 100, node: { color: "#000", name: "javascript" } },
+                  ],
+                },
+              },
+              {
+                name: "test-repo-2",
+                languages: {
+                  edges: [
+                    { size: 100, node: { color: "#000", name: "JAVASCRIPT" } },
+                  ],
+                },
+              },
+              {
+                name: "test-repo-3",
+                languages: {
+                  edges: [
+                    { size: 100, node: { color: "#000", name: "JavaScript" } },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    mock.onPost("https://api.github.com/graphql").reply(200, data_case_test);
+
+    let repo = await fetchTopLanguages("anuraghazra");
+    // All variations should map to JavaScript color #f1e05a from languageColors.json
+    expect(repo.javascript.color).toBe("#f1e05a");
+    expect(repo.JAVASCRIPT.color).toBe("#f1e05a");
+    expect(repo.JavaScript.color).toBe("#f1e05a");
+  });
+
+  it("should fallback to API color when language not in languageColors.json", async () => {
+    const data_unknown_lang = {
+      data: {
+        user: {
+          repositories: {
+            nodes: [
+              {
+                name: "test-repo",
+                languages: {
+                  edges: [
+                    {
+                      size: 100,
+                      node: { color: "#abc123", name: "UnknownLanguage" },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    mock.onPost("https://api.github.com/graphql").reply(200, data_unknown_lang);
+
+    let repo = await fetchTopLanguages("anuraghazra");
+    // Should use API color #abc123 since UnknownLanguage is not in languageColors.json
+    expect(repo.UnknownLanguage.color).toBe("#abc123");
+  });
+
+  it("should fallback to default color when no API color and not in languageColors.json", async () => {
+    const data_no_color = {
+      data: {
+        user: {
+          repositories: {
+            nodes: [
+              {
+                name: "test-repo",
+                languages: {
+                  edges: [
+                    {
+                      size: 100,
+                      node: { color: null, name: "UnknownLanguage" },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    mock.onPost("https://api.github.com/graphql").reply(200, data_no_color);
+
+    let repo = await fetchTopLanguages("anuraghazra");
+    // Should use default color #858585 when no custom color and no API color
+    expect(repo.UnknownLanguage.color).toBe("#858585");
   });
 });
