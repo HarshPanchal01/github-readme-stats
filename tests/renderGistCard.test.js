@@ -35,7 +35,7 @@ describe("test renderGistCard", () => {
     );
     expect(queryByTestId(document.body, "lang-color")).toHaveAttribute(
       "fill",
-      "#3572A5",
+      "#FFD43B",
     );
   });
 

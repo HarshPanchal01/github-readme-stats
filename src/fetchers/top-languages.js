@@ -7,6 +7,28 @@ import { CustomError, MissingParamError } from "../common/error.js";
 import { wrapTextMultiline } from "../common/fmt.js";
 import { request } from "../common/http.js";
 
+/** Import language colors.
+ *
+ * @description Here we use the workaround found in
+ * https://stackoverflow.com/questions/66726365/how-should-i-import-json-in-node
+ * since vercel is using v16.14.0 which does not yet support json imports without the
+ * --experimental-json-modules flag.
+ */
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const languageColors = require("../common/languageColors.json");
+
+const DEFAULT_LANG_COLOR = "#858585";
+
+// Create a lowercase key mapping for efficient case-insensitive lookups
+const lowercaseLanguageColors = Object.keys(languageColors).reduce(
+  (acc, key) => {
+    acc[key.toLowerCase()] = languageColors[key];
+    return acc;
+  },
+  {},
+);
+
 /**
  * Top languages fetcher object.
  *
@@ -44,6 +66,23 @@ const fetcher = (variables, token) => {
       Authorization: `token ${token}`,
     },
   );
+};
+
+/**
+ * Get custom color for a language from languageColors.json.
+ * Supports case-insensitive matching.
+ *
+ * @param {string} langName Language name.
+ * @returns {string | null} Custom color or null if not found.
+ */
+const getCustomColor = (langName) => {
+  // Direct match
+  if (languageColors[langName]) {
+    return languageColors[langName];
+  }
+
+  // Case-insensitive fallback using pre-computed lowercase mapping
+  return lowercaseLanguageColors[langName.toLowerCase()] || null;
 };
 
 /**
@@ -134,7 +173,10 @@ const fetchTopLanguages = async (
         ...acc,
         [prev.node.name]: {
           name: prev.node.name,
-          color: prev.node.color,
+          color:
+            getCustomColor(prev.node.name) ||
+            prev.node.color ||
+            DEFAULT_LANG_COLOR,
           size: langSize,
           count: repoCount,
         },

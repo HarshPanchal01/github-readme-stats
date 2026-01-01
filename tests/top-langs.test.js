@@ -57,12 +57,12 @@ const error = {
 
 const langs = {
   HTML: {
-    color: "#0f0",
+    color: "#e34c26",
     name: "HTML",
     size: 250,
   },
   javascript: {
-    color: "#0ff",
+    color: "#f1e05a",
     name: "javascript",
     size: 200,
   },

@@ -284,7 +284,7 @@ exports[`Test Render WakaTime Card should render correctly with compact layout 1
             y="0"
             width="29.0625"
             height="8"
-            fill="#3178c6"
+            fill="#3178C6"
           />
         
       
@@ -296,7 +296,7 @@ exports[`Test Render WakaTime Card should render correctly with compact layout 1
     </g>
   
     <g transform="translate(230, 25)">
-      <circle cx="5" cy="6" r="5" fill="#3178c6" />
+      <circle cx="5" cy="6" r="5" fill="#3178C6" />
       <text data-testid="lang-name" x="15" y="10" class='lang-name'>
         TypeScript - 1 min
       </text>
@@ -436,7 +436,7 @@ exports[`Test Render WakaTime Card should render correctly with compact layout w
             y="0"
             width="30.503999999999998"
             height="8"
-            fill="#3178c6"
+            fill="#3178C6"
           />
         
       
@@ -448,7 +448,7 @@ exports[`Test Render WakaTime Card should render correctly with compact layout w
     </g>
   
     <g transform="translate(230, 25)">
-      <circle cx="5" cy="6" r="5" fill="#3178c6" />
+      <circle cx="5" cy="6" r="5" fill="#3178C6" />
       <text data-testid="lang-name" x="15" y="10" class='lang-name'>
         TypeScript - 1 min
       </text>
