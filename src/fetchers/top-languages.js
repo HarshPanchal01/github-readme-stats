@@ -62,13 +62,15 @@ const applyLanguageColorOverrides = (topLangs, customColors = {}) => {
     return topLangs;
   }
 
+  // Create a normalized lookup map for case-insensitive matching
+  const normalizedColors = {};
+  for (const [langName, color] of Object.entries(customColors)) {
+    normalizedColors[langName.toLowerCase()] = color;
+  }
+
   const result = { ...topLangs };
-  Object.keys(result).forEach((langName) => {
-    // Check for custom color (case-insensitive)
-    const customColor =
-      customColors[langName] ||
-      customColors[langName.toLowerCase()] ||
-      customColors[langName.toUpperCase()];
+  for (const langName in result) {
+    const customColor = normalizedColors[langName.toLowerCase()];
 
     if (customColor) {
       result[langName] = {
@@ -76,7 +78,7 @@ const applyLanguageColorOverrides = (topLangs, customColors = {}) => {
         color: customColor.startsWith("#") ? customColor : `#${customColor}`,
       };
     }
-  });
+  }
 
   return result;
 };
