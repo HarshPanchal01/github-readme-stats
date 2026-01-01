@@ -1,4 +1,16 @@
 export const themes = {
+  custom_red: {
+    title_color: "fb4848",
+    icon_color: "fb4848",
+    text_color: "fb4848",
+    bg_color: "00000000",
+  },
+  custom_green: {
+    title_color: "2ea043",
+    icon_color: "2ea043",
+    text_color: "2ea043",
+    bg_color: "00000000",
+  },
   default: {
     title_color: "2f80ed",
     icon_color: "4c71f2",
