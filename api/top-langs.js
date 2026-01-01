@@ -14,7 +14,10 @@ import {
 } from "../src/common/error.js";
 import { parseArray, parseBoolean } from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
-import { fetchTopLanguages } from "../src/fetchers/top-languages.js";
+import {
+  fetchTopLanguages,
+  applyLanguageColorOverrides,
+} from "../src/fetchers/top-languages.js";
 import { isLocaleAvailable } from "../src/translations.js";
 
 // @ts-ignore
@@ -42,6 +45,7 @@ export default async (req, res) => {
     disable_animations,
     hide_progress,
     stats_format,
+    lang_colors,
   } = req.query;
   res.setHeader("Content-Type", "image/svg+xml");
 
@@ -124,6 +128,24 @@ export default async (req, res) => {
       size_weight,
       count_weight,
     );
+
+    // Parse lang_colors if provided
+    let customColors = {};
+    if (lang_colors) {
+      try {
+        customColors = JSON.parse(lang_colors);
+      } catch {
+        // Invalid JSON in lang_colors parameter - ignore it
+        // This allows graceful degradation
+      }
+    }
+
+    // Apply custom color overrides
+    const topLangsWithColors = applyLanguageColorOverrides(
+      topLangs,
+      customColors,
+    );
+
     const cacheSeconds = resolveCacheSeconds({
       requested: parseInt(cache_seconds, 10),
       def: CACHE_TTL.TOP_LANGS_CARD.DEFAULT,
@@ -134,7 +156,7 @@ export default async (req, res) => {
     setCacheHeaders(res, cacheSeconds);
 
     return res.send(
-      renderTopLanguages(topLangs, {
+      renderTopLanguages(topLangsWithColors, {
         custom_title,
         hide_title: parseBoolean(hide_title),
         hide_border: parseBoolean(hide_border),

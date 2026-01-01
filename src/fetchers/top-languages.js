@@ -51,6 +51,37 @@ const fetcher = (variables, token) => {
  */
 
 /**
+ * Apply custom language color overrides.
+ *
+ * @param {TopLangData} topLangs Language data with default colors.
+ * @param {Record<string, string>} customColors Custom color overrides (language name -> hex color).
+ * @returns {TopLangData} Language data with custom colors applied.
+ */
+const applyLanguageColorOverrides = (topLangs, customColors = {}) => {
+  if (!customColors || Object.keys(customColors).length === 0) {
+    return topLangs;
+  }
+
+  const result = { ...topLangs };
+  Object.keys(result).forEach((langName) => {
+    // Check for custom color (case-insensitive)
+    const customColor =
+      customColors[langName] ||
+      customColors[langName.toLowerCase()] ||
+      customColors[langName.toUpperCase()];
+
+    if (customColor) {
+      result[langName] = {
+        ...result[langName],
+        color: customColor.startsWith("#") ? customColor : `#${customColor}`,
+      };
+    }
+  });
+
+  return result;
+};
+
+/**
  * Fetch top languages for a given username.
  *
  * @param {string} username GitHub username.
@@ -158,5 +189,5 @@ const fetchTopLanguages = async (
   return topLangs;
 };
 
-export { fetchTopLanguages };
+export { fetchTopLanguages, applyLanguageColorOverrides };
 export default fetchTopLanguages;
