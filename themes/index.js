@@ -1,4 +1,11 @@
 export const themes = {
+  rose_custom: {
+    title_color: "8d192b",
+    text_color: "862931",
+    icon_color: "B71F36",
+    border_color: "b3a2a2",
+    bg_color: "f7ecea",     
+  },
   custom_red: {
     title_color: "fb4848",
     icon_color: "fb4848",
