@@ -423,7 +423,7 @@ const renderStatsCard = (stats, options = {}) => {
     },
     {
       id: "days_since_grass",
-      label: "Days Since Touched Grass",
+      label: "Last Touched Grass (days)",
       value: "67",
       icon: icons.commits,
     },
