@@ -805,11 +805,14 @@ const renderTopLanguages = (topLangs, options = {}) => {
     translations: langCardLocales,
   });
 
-  const { langs, totalLanguageSize } = trimTopLanguages(
-    topLangs,
-    langs_count,
-    hide,
-  );
+  const langs = [
+    { name: "English (CA)", color: "#ec3333", size: 69.69 },
+    { name: "Yapping", color: "#f5d549", size: 10.73 },
+    { name: "English (US)", color: "#2e68e6", size: 9.11 },
+    { name: "Natural Language", color: "#28e6b6", size: 7.58 },
+    { name: "Facts", color: "#7228e9", size: 2.89 },
+  ];
+  const totalLanguageSize = langs.reduce((acc, curr) => acc + curr.size, 0);
 
   let width = card_width
     ? isNaN(card_width)

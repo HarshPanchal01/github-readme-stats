@@ -57,7 +57,7 @@ const LONG_LOCALES = [
  * @param {object} params Object that contains the createTextNode parameters.
  * @param {string} params.icon The icon to display.
  * @param {string} params.label The label to display.
- * @param {number} params.value The value to display.
+ * @param {number | string} params.value The value to display.
  * @param {string} params.id The id of the stat.
  * @param {string=} params.unitSymbol The unit symbol of the stat.
  * @param {number} params.index The index of the stat.
@@ -86,7 +86,9 @@ const createTextNode = ({
       ? clampValue(numberPrecision, 0, 2)
       : undefined;
   const kValue =
-    numberFormat.toLowerCase() === "long" || id === "prs_merged_percentage"
+    typeof value === "string" ||
+    numberFormat.toLowerCase() === "long" ||
+    id === "prs_merged_percentage"
       ? value
       : kFormatter(value, precision);
   const staggerDelay = (index + 3) * 150;
@@ -412,28 +414,51 @@ const renderStatsCard = (stats, options = {}) => {
   // @ts-ignore
   const isLongLocale = locale ? LONG_LOCALES.includes(locale) : false;
 
-  // filter out hidden stats defined by user & create the text nodes
-  const statItems = Object.keys(STATS)
-    .filter((key) => !hide.includes(key))
-    .map((key, index) => {
-      // @ts-ignore
-      const stats = STATS[key];
-
-      // create the text nodes, and pass index so that we can calculate the line spacing
-      return createTextNode({
-        icon: stats.icon,
-        label: stats.label,
-        value: stats.value,
-        id: stats.id,
-        unitSymbol: stats.unitSymbol,
-        index,
-        showIcons: show_icons,
-        shiftValuePos: 79.01 + (isLongLocale ? 50 : 0),
-        bold: text_bold,
-        numberFormat: number_format,
-        numberPrecision: number_precision,
-      });
-    });
+  const statItems = [
+    {
+      id: "chess_elo",
+      label: "Chess.com Elo",
+      value: "1702",
+      icon: icons.star,
+    },
+    {
+      id: "days_since_grass",
+      label: "Days Since Touched Grass",
+      value: "67",
+      icon: icons.commits,
+    },
+    {
+      id: "llm_tokens_last_month",
+      label: "LLM Tokens Used (last month)",
+      value: "10e404",
+      icon: icons.gist,
+    },
+    {
+      id: "total_issues",
+      label: "Total Issues",
+      value: totalIssues,
+      icon: icons.issues,
+    },
+    {
+      id: "reddit_hours_today",
+      label: "Doomscrolled Reddit (today)",
+      value: "25 hrs",
+      icon: icons.contribs,
+    },
+  ].map((stats, index) =>
+    createTextNode({
+      icon: stats.icon,
+      label: stats.label,
+      value: stats.value,
+      id: stats.id,
+      index,
+      showIcons: show_icons,
+      shiftValuePos: 79.01 + (isLongLocale ? 50 : 0),
+      bold: text_bold,
+      numberFormat: number_format,
+      numberPrecision: number_precision,
+    }),
+  );
 
   if (statItems.length === 0 && hide_rank) {
     throw new CustomError(
