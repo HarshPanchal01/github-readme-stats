@@ -429,8 +429,8 @@ const renderStatsCard = (stats, options = {}) => {
     },
     {
       id: "llm_tokens_last_month",
-      label: "LLM Tokens Used (last month)",
-      value: "10e404",
+      label: "LLM Tokens Used (monthly)",
+      value: "10E404",
       icon: icons.gist,
     },
     {
@@ -441,7 +441,7 @@ const renderStatsCard = (stats, options = {}) => {
     },
     {
       id: "reddit_hours_today",
-      label: "Doomscrolled Reddit (today)",
+      label: "Time On Reddit (today)",
       value: "25 hrs",
       icon: icons.contribs,
     },
